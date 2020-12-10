@@ -1,0 +1,60 @@
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "src/models/entities/user.entity";
+import { Repository } from "typeorm";
+
+
+@Injectable()
+export class UserService {
+
+    constructor(@InjectRepository(User) private repository: Repository<User>) {
+    }
+
+    public async getAll(): Promise<Array<User>> {
+        
+        return await this.repository.find();
+    }
+
+    public async getById(id: number): Promise<User> {
+        return await this.repository.findOne(id);
+    }
+
+    public async getByUsername(usernameIn: string): Promise<User> {
+        return await this.repository.findOne({
+            where: {username : usernameIn}
+        });
+    }
+
+    public async getByEmail(emailIn: string): Promise<User> {
+
+        return await this.repository.findOne({
+            where: {email: emailIn}
+        });
+    }
+
+    public async save(user: User) {
+        await this.repository.save(user);
+    }
+
+    public async removeById(id: number) {
+        await this.repository.delete(id);
+    }
+
+    public async update(id: number, user: User): Promise<User> {
+        const toUpdate = await this.repository.findOne(id);
+
+        if(!toUpdate) {
+            throw new NotFoundException('User not found with id: ' + id);
+        }
+
+        toUpdate.username = user.username;
+        toUpdate.firstname = user.firstname;
+        toUpdate.lastname = user.lastname;
+        toUpdate.birthday = user.birthday;
+        toUpdate.email = user.email;
+        toUpdate.password = user.password;
+
+        await toUpdate.save();
+        return toUpdate;
+    }
+}
