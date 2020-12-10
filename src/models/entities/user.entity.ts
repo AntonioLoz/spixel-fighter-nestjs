@@ -1,5 +1,6 @@
 import { DefaultValuePipe } from "@nestjs/common";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import bcrypt from 'bcrypt';
 
 // TODO implementar los constraints y las validaciones
 
@@ -9,10 +10,14 @@ export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({
+        unique: true
+    })
     email: string;
 
-    @Column()
+    @Column({
+        unique:true
+    })
     username: string;
 
     @Column()
@@ -39,5 +44,10 @@ export class User extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
+    @BeforeInsert()
+    public async hashPassword() {
+        const salt = await bcrypt.genSalt();
+        this.password = await bcrypt.hash(this.password, salt);
+    }
 
 }

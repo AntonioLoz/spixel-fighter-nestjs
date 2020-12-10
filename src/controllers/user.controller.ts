@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@nestjs/common";
 import { User } from "src/models/entities/user.entity";
 import { UserService } from "src/services/user.service";
 
@@ -33,7 +33,7 @@ export class UserController {
         return this.service.save(user);
     }
 
-    @Patch(':id')
+    @Put(':id')
     async editUser(@Body() user: User, @Param('id', ParseIntPipe) id: number) {
         const toEdit = await this.service.update(id, user);
 
