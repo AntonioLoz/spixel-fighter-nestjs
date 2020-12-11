@@ -21,7 +21,6 @@ export class UserService {
     }
 
     public async getByUsername(usernameIn: string): Promise<User> {
-        console.log("TEST[UserService]:", usernameIn);
         
         return await this.repository.findOne({
             where: {username : usernameIn}
@@ -58,7 +57,7 @@ export class UserService {
         toUpdate.lastname = user.lastname;
         toUpdate.birthday = user.birthday;
         toUpdate.email = user.email;
-        toUpdate.password = user.password;
+        toUpdate.password =  await bcrypt.hash(user.password, 10);
 
         await toUpdate.save();
         return toUpdate;

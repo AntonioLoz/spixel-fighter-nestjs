@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
 import { User } from "src/models/entities/user.entity";
 import { UserService } from "src/services/user.service";
 
@@ -9,6 +10,7 @@ export class UserController {
     }
 
     @Get()
+    @UseGuards(AuthGuard('jwt'))
     findAll() {
         return this.service.getAll();
     }
@@ -41,6 +43,7 @@ export class UserController {
     }
 
     @Delete(':id')
+    @UseGuards(AuthGuard('jwt'))
     removeById(@Param('id', ParseIntPipe) id: number) {
         this.service.removeById(id);
     }

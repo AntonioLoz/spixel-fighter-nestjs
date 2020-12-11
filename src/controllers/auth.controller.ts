@@ -6,16 +6,11 @@ import { AuthService } from "src/services/auth.service";
 export class AuthControler {
 
     constructor(private service: AuthService) {
-
-        console.log("TEST[AuthController]");
         
     }
 
     @Post()
     public async login(@Body() loginDto: LoginDTO): Promise<string>{
-
-        console.log("TEST[AuthController]:", loginDto);
-
 
         const flag: boolean = await this.service.validateUser(loginDto);
 
