@@ -17,6 +17,7 @@ import { UserModule } from "./user.module";
             signOptions: {expiresIn: process.env.TOKEN_EXPIRE}
         })
     ],
+    
     controllers: [AuthControler],
     providers: [AuthService, JwtStrategy],
     exports: [AuthService]
