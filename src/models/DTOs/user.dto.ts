@@ -1,6 +1,6 @@
 // TODO encapsular
 
-export class User {
+export class UserDTO {
     email: string;
     username: string;
     password: string;

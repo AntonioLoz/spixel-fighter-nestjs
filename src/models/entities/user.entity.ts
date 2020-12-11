@@ -1,4 +1,3 @@
-import { DefaultValuePipe } from "@nestjs/common";
 import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 // TODO implementar los constraints y las validaciones
@@ -9,10 +8,14 @@ export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({
+        unique: true
+    })
     email: string;
 
-    @Column()
+    @Column({
+        unique:true
+    })
     username: string;
 
     @Column()
@@ -38,6 +41,5 @@ export class User extends BaseEntity {
 
     @UpdateDateColumn()
     updatedAt: Date;
-
 
 }
