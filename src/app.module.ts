@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AnimationModule } from './modules/animations.module';
 import { AuthModule } from './modules/auth.module';
+import { FighterModule } from './modules/fighters.module';
 import { UserModule } from './modules/user.module';
 
 @Module({
@@ -13,7 +14,8 @@ import { UserModule } from './modules/user.module';
     TypeOrmModule.forRoot(),
     UserModule,
     AuthModule,
-    AnimationModule
+    AnimationModule,
+    FighterModule
     ],
   controllers: [AppController],
   providers: [AppService],

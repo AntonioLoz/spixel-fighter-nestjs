@@ -1,4 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Fighter } from "./fighter.entity";
 
 // TODO implementar los constraints y las validaciones
 
@@ -30,11 +31,10 @@ export class User extends BaseEntity {
     @Column()
     birthday: Date;
 
-    @Column({ default: 0 })
-    exp: number;
-
-    @Column( { default: 0})
-    level: number;
+    @ManyToMany(() => Fighter, { cascade: true, eager: true })
+    @JoinTable()
+    fighters: Fighter[];
+    
 
     @CreateDateColumn()
     registeredAt: Date;

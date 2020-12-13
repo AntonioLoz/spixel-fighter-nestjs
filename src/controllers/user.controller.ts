@@ -32,12 +32,10 @@ export class UserController {
     }
 
     @Post()
-    create(@Body() user: User, @Res() res: Response) {
-        return this.service.save(user).catch( (err) => {
-            if(err.code = 'ER_DUP_ENTRY') {                
-                res.sendStatus(422);
-            }
-        });
+    public create(@Body() user: User): User {
+
+        this.service.save(user);
+        return user;
     }
 
     @Put(':id')

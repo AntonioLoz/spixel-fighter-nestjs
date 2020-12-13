@@ -34,11 +34,11 @@ export class UserService {
         });
     }
 
-    public async save(user: User) {
+    public async save(user: User): Promise<User> {
 
         user.password = await bcrypt.hash(user.password, 10);
 
-        await this.repository.save(user);
+        return await this.repository.save<User>(user);
     }
 
     public async removeById(id: number) {

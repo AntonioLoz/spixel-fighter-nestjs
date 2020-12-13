@@ -23,7 +23,9 @@ export class AuthService {
         }
 
         else {
-            user = await this.userService.getByUsername(userDto.userId)
+            user = await this.userService.getByUsername(userDto.userId);
+            console.log("TEST[AuthService](Validate):", user);
+            
         }
 
         if(!user) {

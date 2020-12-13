@@ -6,7 +6,8 @@ import { MongodbModule } from "./mongo.module";
 @Module({
     imports: [MongodbModule],
     controllers: [AnimationController],
-    providers: [AnimationService]
+    providers: [AnimationService],
+    exports: [AnimationService]
 })
 
 export class AnimationModule {}
