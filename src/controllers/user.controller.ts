@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Res, UseGuards } from "@nestjs/common";
+import { Response } from 'express';
 import { AuthGuard } from "@nestjs/passport";
 import { User } from "src/models/entities/user.entity";
 import { UserService } from "src/services/user.service";
@@ -31,8 +32,10 @@ export class UserController {
     }
 
     @Post()
-    create(@Body() user: User) {
-        return this.service.save(user);
+    public create(@Body() user: User): User {
+
+        this.service.save(user);
+        return user;
     }
 
     @Put(':id')
