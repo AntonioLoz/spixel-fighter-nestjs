@@ -11,8 +11,8 @@ import { UserModule } from './modules/user.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(),
     UserModule,
-    AuthModule
-    ],
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

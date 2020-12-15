@@ -1,6 +1,5 @@
 export class LoginDTO {
-
-    // username or email
-    userId: string;
-    password: string;
+  // username or email
+  userId: string;
+  password: string;
 }
