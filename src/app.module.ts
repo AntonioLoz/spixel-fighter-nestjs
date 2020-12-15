@@ -14,9 +14,13 @@ import { UserModule } from './modules/user.module';
     TypeOrmModule.forRoot(),
     UserModule,
     AuthModule,
+<<<<<<< HEAD
     AnimationModule,
     FighterModule
     ],
+=======
+  ],
+>>>>>>> socketFeature
   controllers: [AppController],
   providers: [AppService],
 })
