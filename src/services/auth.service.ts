@@ -14,38 +14,28 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+ 
+
   public async validateUser(userDto: LoginDTO): Promise<boolean> {
-    let user: User;
 
-    if (String(userDto.userId).includes('@')) {
-      user = await this.userService.getByEmail(userDto.userId);
-    } else {
-      user = await this.userService.getByUsername(userDto.userId);
-    }
+      let user: User;
 
-    public async validateUser(userDto: LoginDTO): Promise<boolean> {
+      if(String(userDto.userId).includes("@")){
+          user = await this.userService.getByEmail(userDto.userId);
+      }
 
-        let user: User;
+      else {
+          user = await this.userService.getByUsername(userDto.userId);
+          console.log("TEST[AuthService](Validate):", user);
+          
+      }
 
-        if(String(userDto.userId).includes("@")){
-           user = await this.userService.getByEmail(userDto.userId);
-        }
+      if(!user) {
+          throw new NotFoundException(`User ${userDto.userId} not found`);
+      }
 
-        else {
-            user = await this.userService.getByUsername(userDto.userId);
-            console.log("TEST[AuthService](Validate):", user);
-            
-        }
-
-        if(!user) {
-            throw new NotFoundException(`User ${userDto.userId} not found`);
-        }
-
-        
-        return await bcrypt.compare(userDto.password, user.password);
-    }
-
-    return await bcrypt.compare(userDto.password, user.password);
+      
+      return await bcrypt.compare(userDto.password, user.password);
   }
 
   public async generateToken(name: string) {
