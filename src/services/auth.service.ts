@@ -21,28 +21,11 @@ export class AuthService {
       user = await this.userService.getByEmail(userDto.userId);
     } else {
       user = await this.userService.getByUsername(userDto.userId);
+      console.log('TEST[AuthService](Validate):', user);
     }
 
-    public async validateUser(userDto: LoginDTO): Promise<boolean> {
-
-        let user: User;
-
-        if(String(userDto.userId).includes("@")){
-           user = await this.userService.getByEmail(userDto.userId);
-        }
-
-        else {
-            user = await this.userService.getByUsername(userDto.userId);
-            console.log("TEST[AuthService](Validate):", user);
-            
-        }
-
-        if(!user) {
-            throw new NotFoundException(`User ${userDto.userId} not found`);
-        }
-
-        
-        return await bcrypt.compare(userDto.password, user.password);
+    if (!user) {
+      throw new NotFoundException(`User ${userDto.userId} not found`);
     }
 
     return await bcrypt.compare(userDto.password, user.password);
