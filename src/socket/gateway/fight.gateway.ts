@@ -1,8 +1,5 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Socket } from 'socket.io';
-import * as io from 'socket.io'
-import { Server } from "http";
-import { TurnDTO } from "src/models/DTOs/turn.dto";
+import { Socket, Server } from 'socket.io';
 
 // Necesidad de incorporar dos atributos, uno para cada jugador. 
 // Con ellos llevar el control de las vidas y el tiempo para así
@@ -24,106 +21,86 @@ export class Gateway implements OnGatewayConnection, OnGatewayDisconnect {
     flags: Array<boolean>;
 
     start: NodeJS.Timeout;
+    timeOut: NodeJS.Timeout;
     stopFunction: Function;
     startFunction: Function;
 
+    room: string;
+
     public constructor() {
+        
         this.clientsCount = 0;
         this.clients = new Array<string>();
         this.flags = new Array<boolean>(2);
         this.setTimmerWaitingRoom();
+        this.room = "waitingRoom"
     }
 
     public handleConnection(client: Socket, ...args: any[]) {
+
+        console.log('User connected: ', client.id);
+        
+        client.join(this.room)
 
         if(this.clientsCount < 2) {
             this.clientsCount++;
             this.clients.push(client.id);
 
 
-            if(this.clientsCount <= 1) {
-                this.flags = this.getFlagsRandom();
-            }
-            else {
-                this.startFunction(client);
-                setTimeout(() => clearInterval(this.start) , 22000);
+            if(this.clientsCount === 2) {
+            
+                this.startFunction();
+                this.timeOut = setTimeout(() => clearInterval(this.start) , 22000);
             }
 
             client.broadcast.emit('clientsCount', this.clientsCount);
-            
-            console.log("TEST[Gateway](connectionHandle):");
-            console.log("-> ClientsCount:", this.clientsCount);
-            console.log("-> Clients: ", this.clients); 
-            
-            
         }
         else {
             client.disconnect(true);
-            console.log("TEST[Gateway](connectionHandle): full capacity");
+            console.log("TEST[Gateway](connectionHandle): Capacity exceeded");
         }
         
     }
 
     public handleDisconnect(client: Socket) {
         this.clientsCount--;
+        client.broadcast.emit('clientsCount', this.clientsCount);
         this.clients.splice(this.clients.indexOf(client.id), 1);
 
-        client.broadcast.emit('clientsCount', this.clientsCount);
-
         this.stopFunction();
+        clearTimeout(this.timeOut);
         this.setTimmerWaitingRoom();
-        
-
-        console.log("TEST[Gateway](disconnectionHandle):");
-        console.log("-> ClientsCount:", this.clientsCount);
-        console.log("-> Clients: ", this.clients);
     }
 
     @SubscribeMessage('waitingRoom')
     public onWaitingRoom(@ConnectedSocket() client: Socket, @MessageBody() fighter: any){
+        
 
-        client.broadcast.emit('waitingRoom', fighter);
+            client.broadcast.emit('waitingRoom', fighter);
     }
 
 
     // Como data recibira un DTO con los atributos necesarios, como pueden ser:
     // turno del jugador, vida actual de ambos, daño provocado, tiempos de control.
 
-    @SubscribeMessage('ring')
-    public onRing(@ConnectedSocket() client: Socket, @MessageBody() turn: TurnDTO) {
+    // @SubscribeMessage('ring')
+    // public onRing(@ConnectedSocket() client: Socket, @MessageBody() turn: TurnDTO) {
 
-        console.log(turn);
-        client.broadcast.emit('ring', turn);
-    }
+    //     console.log(turn);
+    //     client.broadcast.emit('ring', turn);
+    // }
 
-    private switchFlags() {
-        this.flags[0] = this.flags[0] ? false : true;
-        this.flags[1] = this.flags[1] ? false : true;
-    }
 
-    private getFlagsRandom(): Array<boolean> {
-        const x = Math.floor(Math.random() * 10);
-        let flags = new Array<boolean>(2);
-
-        if(x > 5) {
-            flags[0] = true;
-            flags[1] = false;
-        }
-        else {
-            flags[1] = true;
-            flags[0] = false;
-        }
-        return flags;
-    }
 
     private setTimmerWaitingRoom() {
         let x = 19;
 
+        
         this.startFunction = function(){
             this.start = setInterval(() => {
                 
-                console.log(x);
-                this.server.emit('waitingRoomTimmer', x);
+                // console.log(x);
+                this.server.to(this.room).emit('waitingRoomTimmer', x);
                 x--;
             }, 1000);
         };
@@ -131,6 +108,7 @@ export class Gateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.stopFunction = function() {
             
             clearInterval(this.start);
+            
         }
     }
 }

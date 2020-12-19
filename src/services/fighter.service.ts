@@ -27,7 +27,7 @@ export class FighterService {
 
         const fighter = await this.repository.findOne(id);
 
-        fighter.animations = await this.animationService.get(fighter.id);        
+        fighter.animations = await this.animationService.get(1);            
         
         return fighter;
     }
