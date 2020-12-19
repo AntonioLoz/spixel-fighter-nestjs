@@ -17,10 +17,7 @@ export class FighterController {
     }
 
     @Get(':id')
-    public async getById(@Param('id', ParseIntPipe) id: number): Promise<Fighter> {
-
-        console.log( await this.service.getById(id));
-        
+    public async getById(@Param('id', ParseIntPipe) id: number): Promise<Fighter> {        
 
         return this.service.getById(id);
     }

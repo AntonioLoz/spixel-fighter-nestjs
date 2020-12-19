@@ -13,14 +13,21 @@ export class FighterService {
 
     public async getAll(): Promise<Array<Fighter>> {        
         
-        return await this.repository.find();
+        const fighters = await this.repository.find();
+
+        for (let i = 0; i < fighters.length; i++) {
+            
+            fighters[i].animations = await this.animationService.get(1);
+        }
+
+        return fighters;
     }
 
     public async getById(id: number): Promise<Fighter> {
 
         const fighter = await this.repository.findOne(id);
 
-        fighter.animations = await this.animationService.get(fighter.id);        
+        fighter.animations = await this.animationService.get(1);            
         
         return fighter;
     }
