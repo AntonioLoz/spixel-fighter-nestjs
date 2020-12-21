@@ -35,6 +35,8 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.room = "ring";
         this.setTurnTimmer();
         this.setGeneralTimmer();
+        this.generalCount = 60;
+        this.turnCount = 9
     }
 
 
@@ -48,10 +50,10 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if(this.clientsCount < 2) {
             this.clientsCount ++;
             this.socketsId.push(client.id);
-            // this.setGeneralTimmer();
+            this.setGeneralTimmer();
             client.join(this.room)
             this.server.to(client.id).emit('private', 'You are connected');
-            
+            console.log("TEST[RingGateway]: User connected  ->", client.id);
         }
 
         if(this.clientsCount === 2) {
@@ -60,9 +62,9 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.to(this.socketsId[1]).emit('flag', this.flags[1]);
             
             this.setTurnTimmer();
-            this.generalStartFunction();
-            this.turnStartFunction();
-            this.generalTimeOut = setTimeout(() => clearInterval(this.generalStart) , 12000);
+            this.generalStartFunction(this.generalCount);
+            this.turnStartFunction(this.turnCount);
+            this.generalTimeOut = setTimeout(() => clearInterval(this.generalStart) , (this.generalCount + 2) * 1000);
         }
 
         
@@ -74,10 +76,8 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.socketsId.splice(this.socketsId.indexOf(client.id), 1);
 
         this.clientsCount--;
-        
-
-        console.log("User desconnected. SocketsId.length:", this.socketsId.length);
-        
+    
+        console.log("TEST[RingGateway]: User disconected ->", client.id);
         
         this.disconnectAll();
         
@@ -85,15 +85,17 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 
     private setGeneralTimmer() {
-        this.generalCount = 59;
+        
 
-        this.generalStartFunction = function(){
+        this.generalStartFunction = function(counter: number){
+
+            
             this.generalStart = setInterval(() => {
                 
-                this.server.to(this.room).emit('generalTimmer', this.generalCount);
-                // console.log('generalTimmer', x);
+                this.server.to(this.room).emit('generalTimmer', counter);
+                console.log("General counter:",counter);
                 
-                this.generalCount--;
+                counter--;
             }, 1000);
         };
 
@@ -106,28 +108,29 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     private setTurnTimmer() {
-        this.turnCount = 9;
+        
 
-        this.turnStartFunction = function() {
+        this.turnStartFunction = function(counter: number) {
+            
             this.turnStart = setInterval( () => {
-                this.server.to(this.room).emit('turnTimmer', this.turnCount);
-                console.log('turnTimmer:', this.turnCount);
-                if(this.turnCount <= 0) {
-                    this.turnStopFunction();
+                this.server.to(this.room).emit('turnTimmer', counter);
+                // console.log('turnTimmer:', counter);
 
-                    this.turnCount = 9;
+                if(counter <= 0) {
+                    this.turnStopFunction();
                     this.switchFlags();
+
                     setTimeout( () => {
                         this.server.to(this.socketsId[0]).emit('flag', this.flags[0]);
                         this.server.to(this.socketsId[1]).emit('flag', this.flags[1]);
                         console.log("flags:", this.flags);
                         
-                        this.turnStartFunction();
+                        this.turnStartFunction(this.turnCount);
                     }, 3000);
                     
                 }
                 else {
-                    this.turnCount--;
+                    counter--;
                 }
                                 
             }, 1000);
@@ -140,13 +143,10 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     private disconnectAll() {
         this.server.emit('disconnect', 'User disconected');
-
         this.generalStopFunction();
         clearTimeout(this.generalTimeOut);
-        this.setGeneralTimmer();
         this.turnStopFunction();
         clearTimeout(this.turnTimeOut);
-        this.setTurnTimmer();
     }
 
     private switchFlags() {
@@ -174,10 +174,8 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // reiniciará el timmer
     @SubscribeMessage('turn')
     public controlTurnEvent(@MessageBody() turnResult: TurnResultDTO, @ConnectedSocket() client: Socket) {
-        this.switchFlags();
         
         this.turnStopFunction();
-        this.setTurnTimmer();
 
         if(this.socketsId[0] !== client.id) {
             this.server.to(this.socketsId[0]).emit('turnResult', turnResult);
@@ -185,12 +183,15 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
         else {
             this.server.to(this.socketsId[1]).emit('turnResult', turnResult);
         }
+    }
 
-        setTimeout( ()=> {
-            this.server.to(this.socketsId[0]).emit('flag', this.flags[0]);
-            this.server.to(this.socketsId[1]).emit('flag', this.flags[1]);
-            this.turnStartFunction();
-        }, 9000);
+    @SubscribeMessage('animationDone')
+    public animationDoneEvent() {
+        
+        this.switchFlags();
+        this.server.to(this.socketsId[0]).emit('flag', this.flags[0]);
+        this.server.to(this.socketsId[1]).emit('flag', this.flags[1]);
+        this.turnStartFunction(this.turnCount);
     }
 
     @SubscribeMessage('life')

@@ -12,7 +12,7 @@ import { Socket, Server } from 'socket.io';
 // FighterService.
 
 @WebSocketGateway(80)
-export class Gateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class FightGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer()
     server: Server;
@@ -38,7 +38,6 @@ export class Gateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     public handleConnection(client: Socket, ...args: any[]) {
 
-        console.log('User connected: ', client.id);
         
         client.join(this.room)
 
@@ -46,6 +45,7 @@ export class Gateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.clientsCount++;
             this.clients.push(client.id);
 
+            console.log("TEST[FightGateway]: User conected ->", client.id);
 
             if(this.clientsCount === 2) {
             
@@ -57,7 +57,7 @@ export class Gateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
         else {
             client.disconnect(true);
-            console.log("TEST[Gateway](connectionHandle): Capacity exceeded");
+            console.log("TEST[FightGateway](connectionHandle): Capacity exceeded");
         }
         
     }
@@ -66,6 +66,8 @@ export class Gateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.clientsCount--;
         client.broadcast.emit('clientsCount', this.clientsCount);
         this.clients.splice(this.clients.indexOf(client.id), 1);
+        console.log("TEST[FightGateway]: User disconected ->", client.id);
+        
 
         this.stopFunction();
         clearTimeout(this.timeOut);
