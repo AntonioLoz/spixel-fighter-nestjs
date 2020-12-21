@@ -31,6 +31,8 @@ export class UserService {
   public async save(user: User) {
     user.password = await bcrypt.hash(user.password, 10);
 
+    console.log('TEST[UserService](save):', user);
+
     await this.repository.save(user);
   }
 

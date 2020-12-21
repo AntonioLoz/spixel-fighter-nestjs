@@ -14,6 +14,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+<<<<<<< HEAD
  
 
   public async validateUser(userDto: LoginDTO): Promise<boolean> {
@@ -33,6 +34,21 @@ export class AuthService {
       if(!user) {
           throw new NotFoundException(`User ${userDto.userId} not found`);
       }
+=======
+  public async validateUser(userDto: LoginDTO): Promise<boolean> {
+    let user: User;
+
+    if (String(userDto.userId).includes('@')) {
+      user = await this.userService.getByEmail(userDto.userId);
+    } else {
+      user = await this.userService.getByUsername(userDto.userId);
+      console.log('TEST[AuthService](Validate):', user);
+    }
+
+    if (!user) {
+      throw new NotFoundException(`User ${userDto.userId} not found`);
+    }
+>>>>>>> e145aa9db8ef39f7c64687264af20b756e9fc0ea
 
       
       return await bcrypt.compare(userDto.password, user.password);

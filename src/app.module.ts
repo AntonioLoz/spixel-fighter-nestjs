@@ -17,8 +17,12 @@ import { UserModule } from './modules/user.module';
     AuthModule,
     AnimationModule,
     FighterModule,
+<<<<<<< HEAD
     SocketModule
     ],
+=======
+  ],
+>>>>>>> e145aa9db8ef39f7c64687264af20b756e9fc0ea
   controllers: [AppController],
   providers: [AppService],
 })
