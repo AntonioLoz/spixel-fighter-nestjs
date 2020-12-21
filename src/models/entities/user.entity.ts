@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Fighter } from "./fighter.entity";
 
 // TODO implementar los constraints y las validaciones
 
@@ -39,9 +42,9 @@ export class User extends BaseEntity {
   @Column({ default: 0 })
   exp: number;
 
-    @ManyToMany(() => Fighter, { cascade: true, eager: true })
-    @JoinTable()
-    fighters: Fighter[];
+  @ManyToMany(() => Fighter, { cascade: true, eager: true })
+  @JoinTable()
+  fighters: Fighter[];
     
   @Column({ default: 0 })
   level: number;

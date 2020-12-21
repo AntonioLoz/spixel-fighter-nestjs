@@ -7,6 +7,9 @@ export class Attack extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    damage: number;
+
     @ManyToOne(() => Fighter, fighter => fighter.attacks)
     fighter: Fighter;
 

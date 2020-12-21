@@ -34,23 +34,15 @@ export class UserService {
     await this.repository.save(user);
   }
 
-<<<<<<< HEAD
-    public async save(user: User): Promise<User> {
-=======
   public async removeById(id: number) {
     await this.repository.delete(id);
   }
->>>>>>> socketFeature
 
   public async update(id: number, user: User): Promise<User> {
     const toUpdate = await this.repository.findOne(id);
 
-<<<<<<< HEAD
-        return await this.repository.save<User>(user);
-=======
     if (!toUpdate) {
       throw new NotFoundException('User not found with id: ' + id);
->>>>>>> socketFeature
     }
 
     toUpdate.username = user.username;
