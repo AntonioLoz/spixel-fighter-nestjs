@@ -14,13 +14,13 @@ export class AnimationService {
         return await this.db.collection('animations').find().toArray();
     }
 
-    public async get(id: number): Promise<Array<Object>> {
+    public async get(id: ObjectID): Promise<Array<Object>> {
         if (!ObjectID.isValid(id)) {
             throw new BadRequestException();
         }
 
         const response = this.db.collection('animations').find({
-            fighter: id
+            _id: id
         }).toArray();
 
         if(!response) {

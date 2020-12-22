@@ -15,4 +15,6 @@ export class Attack extends BaseEntity {
 
     @Column()
     animationId: string;
+
+    animation: Object;
 }

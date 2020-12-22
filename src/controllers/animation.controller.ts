@@ -1,4 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
+import { ObjectId, ObjectID } from "mongodb";
 import { AnimationService } from "src/services/animation.service";
 
 @Controller('animations')
@@ -15,7 +16,8 @@ export class AnimationController {
     }
 
     @Get()
-    public async find(@Param('id', ParseIntPipe) id: number): Promise<any> {
-        return this.service.get(id);
+    public async find(@Param('id') id: number): Promise<any> {
+
+        return this.service.get(new ObjectId(id));
     }
 }

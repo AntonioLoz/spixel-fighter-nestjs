@@ -1,5 +1,6 @@
 import { NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { ObjectId } from "mongodb";
 import { Fighter } from "src/models/entities/fighter.entity";
 import { Repository } from "typeorm";
 import { AnimationService } from "./animation.service";
@@ -13,12 +14,15 @@ export class FighterService {
 
     public async getAll(): Promise<Array<Fighter>> {        
         
-        const fighters = await this.repository.find();
+        const fighters: Array<Fighter> = await this.repository.find();
 
         for (let i = 0; i < fighters.length; i++) {
-            
-            fighters[i].animations = await this.animationService.get(1);
-        }
+
+            for (let j = 0; j < fighters[i].attacks.length; j++) {
+                
+                fighters[i].attacks[j].animation = await this.animationService.get(new ObjectId( fighters[i].attacks[j].animationId));
+            }
+        }        
 
         return fighters;
     }
@@ -27,7 +31,11 @@ export class FighterService {
 
         const fighter = await this.repository.findOne(id);
 
-        fighter.animations = await this.animationService.get(1);            
+        for (let i = 0; i < fighter.attacks.length; i++) {
+            fighter.attacks[i].animation = await this.animationService.get(new ObjectId(fighter.attacks[i].animationId));
+            
+        }
+                    
         
         return fighter;
     }
@@ -38,8 +46,9 @@ export class FighterService {
             where: {name: nameIn}
         });
 
-        fighter.animations = await this.animationService.get(fighter.id);    
-        
+        for(let i = 0 ; i < 0 ; i++){ 
+            fighter.attacks[i].animation = await this.animationService.get(new ObjectId(fighter.attacks[i].animationId));    
+        }
         return fighter
     }
 

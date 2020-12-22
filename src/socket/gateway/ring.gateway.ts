@@ -120,13 +120,11 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     this.turnStopFunction();
                     this.switchFlags();
 
-                    setTimeout( () => {
-                        this.server.to(this.socketsId[0]).emit('flag', this.flags[0]);
-                        this.server.to(this.socketsId[1]).emit('flag', this.flags[1]);
-                        console.log("flags:", this.flags);
-                        
-                        this.turnStartFunction(this.turnCount);
-                    }, 3000);
+                    this.server.to(this.socketsId[0]).emit('flag', this.flags[0]);
+                    this.server.to(this.socketsId[1]).emit('flag', this.flags[1]);
+                    console.log("flags:", this.flags);
+                    
+                    this.turnStartFunction(this.turnCount);
                     
                 }
                 else {
@@ -200,7 +198,7 @@ export class RingGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.to(this.socketsId[0]).emit('life', life);
         }
         else {
-            this.server.to(this.socketsId[0]).emit('life', life)
+            this.server.to(this.socketsId[1]).emit('life', life)
         }
     }
 }

@@ -22,6 +22,4 @@ export class Fighter extends BaseEntity {
     
     @OneToMany(() => Attack, attack => attack.fighter, { cascade: true, eager: true })
     attacks: Attack[];
-
-    animations: Array<Object>;
 }

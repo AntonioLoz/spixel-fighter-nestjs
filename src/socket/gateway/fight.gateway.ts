@@ -25,6 +25,8 @@ export class FightGateway implements OnGatewayConnection, OnGatewayDisconnect {
     stopFunction: Function;
     startFunction: Function;
 
+    countStart: number;
+
     room: string;
 
     public constructor() {
@@ -33,7 +35,8 @@ export class FightGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.clients = new Array<string>();
         this.flags = new Array<boolean>(2);
         this.setTimmerWaitingRoom();
-        this.room = "waitingRoom"
+        this.room = "waitingRoom";
+        // this.countStart = 0;
     }
 
     public handleConnection(client: Socket, ...args: any[]) {
@@ -48,8 +51,7 @@ export class FightGateway implements OnGatewayConnection, OnGatewayDisconnect {
             console.log("TEST[FightGateway]: User conected ->", client.id);
 
             if(this.clientsCount === 2) {
-            
-                this.startFunction();
+                this.startFunction()
                 this.timeOut = setTimeout(() => clearInterval(this.start) , 22000);
             }
 
@@ -64,6 +66,7 @@ export class FightGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     public handleDisconnect(client: Socket) {
         this.clientsCount--;
+        // this.countStart--;
         client.broadcast.emit('clientsCount', this.clientsCount);
         this.clients.splice(this.clients.indexOf(client.id), 1);
         console.log("TEST[FightGateway]: User disconected ->", client.id);
@@ -80,6 +83,17 @@ export class FightGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
             client.broadcast.emit('waitingRoom', fighter);
     }
+
+    // @SubscribeMessage('start') 
+    // public starting(@ConnectedSocket() client: Socket, @MessageBody() flag: string){
+    //     this.countStart++;
+    //     if(this.countStart === 2) {
+    //         this.countStart = 0;
+    //         this.startFunction();
+    //         this.server.to(this.clients[0]).emit('start');
+    //         this.server.to(this.clients[1]).emit('start');
+    //     }
+    // }
 
 
     // Como data recibira un DTO con los atributos necesarios, como pueden ser:
